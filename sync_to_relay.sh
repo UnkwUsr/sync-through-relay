@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # TODO: absolute path
-PHONE_INBOX="./phone_inbox.md"
-LOCAL_DIR_SENT="./sent"
+PHONE_INBOX="$HOME/device/phone_inbox.md"
+LOCAL_DIR_SENT="$HOME/device/sent"
 SYNC_TARGET="mys:~/termux-inbox"
 GPG_ID="for-termux-inbox"
 
