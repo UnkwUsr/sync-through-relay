@@ -1,40 +1,52 @@
 #!/bin/bash
 set -euo pipefail
 
-# TODO: absolute path
-PHONE_INBOX="$HOME/device/phone_inbox.md"
-PHONE_VOICES="$HOME/device/inbox_voices/"
-LOCAL_DIR_SENT="$HOME/device/sent"
-SYNC_TARGET="mys:~/termux-inbox"
+INBOX_FOLDER="$HOME/device/txts/phone_inbox"
+
+INBOX_MD="$INBOX_FOLDER/inbox.md"
+INBOX_VOICES="$INBOX_FOLDER/voices/"
+LOCAL_DIR_SENT="$INBOX_FOLDER/sent"
+
+SYNC_DEST="mys:~/termux-inbox"
 GPG_ID="for-termux-inbox"
 
-newfilename="inbox_$EPOCHSECONDS.md"
-newfilename_voices="voices_$EPOCHSECONDS"
-cryptedfile=$(mktemp -u)
-crypted_voices=$(mktemp -u)
-# crypt
-gpg --encrypt -o "$cryptedfile" --recipient $GPG_ID "$PHONE_INBOX"
-# crypt voices
-gpgtar --encrypt -o "$crypted_voices" --recipient $GPG_ID \
-    -C "$(dirname "$PHONE_VOICES")" "$(basename "$PHONE_VOICES")"
-# send
-scp "$cryptedfile" "$SYNC_TARGET/$newfilename.gpg" \
-    || (echo >> "$PHONE_INBOX" && exit 1)
-# send voices
-scp "$crypted_voices" "$SYNC_TARGET/$newfilename_voices.tar.gpg" \
-    || (echo -e "\ncant send voices\n" >> "$PHONE_INBOX" && exit 1)
-# remove crypted temp files
-rm "$cryptedfile" "$crypted_voices"
+append_time() {
+    if [ -d "$1" ]; then
+        echo "${1}_$EPOCHSECONDS"
+    else
+        echo "${EPOCHSECONDS}_$1"
+    fi
+}
 
-mkdir -p "$LOCAL_DIR_SENT"
-# move inbox to sent
-mv -n "$PHONE_INBOX" "$LOCAL_DIR_SENT/$newfilename"
-# move voices to sent
-mv "$PHONE_VOICES" "$LOCAL_DIR_SENT/$newfilename_voices"
+crypt_into() {
+    src="$1"
+    new="$2"
+    if [ -d "$src" ]; then
+        gpgtar --encrypt -o "$new" --recipient $GPG_ID \
+            -C "$(dirname "$src")" "$(basename "$src")"
+    else
+        gpg --encrypt -o "$new" --recipient $GPG_ID "$src"
+    fi
+}
 
-# TODO: god, should gurantee that sync did well
-# UPD: would like to live some time with it, see how it goes, later can add. Ok
-# rm "$SYNC_DIR_FROM/$newfilename"
+# crypt, send and move to folder "sent" (just in case)
+crypt_and_send() {
+    src="$1"
+    timed_name="$(append_time "$(basename "$src")")"
+    crypted="$TMPDIR/$timed_name.gpg"
+
+    crypt_into "$src" "$crypted"
+
+    scp "$crypted" "$SYNC_DEST" \
+        || (echo >> "$INBOX_MD" && echo "can't send" && exit 1)
+    rm "$crypted"
+
+    mkdir -p "$LOCAL_DIR_SENT"
+    mv -n "$src" "$LOCAL_DIR_SENT/$timed_name"
+}
+
+crypt_and_send "$INBOX_MD"
+crypt_and_send "$INBOX_VOICES"
 
 echo
 echo "all done. Press enter"
