@@ -32,6 +32,11 @@ crypt_into() {
 # crypt, send and move to folder "sent" (just in case)
 crypt_and_send() {
     src="$1"
+    if [ ! -e "$src" ]; then
+        echo "WARN: $src does not exist, skipping"
+        return
+    fi
+
     timed_name="$(append_time "$(basename "$src")")"
     crypted="$TMPDIR/$timed_name.gpg"
 
