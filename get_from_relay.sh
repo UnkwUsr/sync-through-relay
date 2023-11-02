@@ -12,7 +12,11 @@ rsync --remove-source-files --ignore-missing-args \
 # decrypt
 gpg -q --decrypt-files $LOCAL_DIR_SAVE/*.gpg
 # untar, if have any
-tar xvf $LOCAL_DIR_SAVE/*.tar -C $LOCAL_DIR_SAVE --one-top-level
+(cd $LOCAL_DIR_SAVE && \
+    for file in *.tar; do
+        tar -xvf "$file" --one-top-level;
+    done)
+
 
 rm $LOCAL_DIR_SAVE/*.gpg $LOCAL_DIR_SAVE/*.tar
 
