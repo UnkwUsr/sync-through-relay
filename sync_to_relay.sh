@@ -23,8 +23,8 @@ crypt_into() {
     new="$2"
     if [ -d "$src" ]; then
         crypted="$TMPDIR/$new.tar.gpg"
-        gpgtar --encrypt -o "$crypted" --recipient $GPG_ID \
-            -C "$(dirname "$src")" "$(basename "$src")"
+        (cd "$src" && \
+            gpgtar --encrypt -o "$crypted" --recipient $GPG_ID ./*)
     else
         crypted="$TMPDIR/$new.gpg"
         gpg --encrypt -o "$crypted" --recipient $GPG_ID "$src"
