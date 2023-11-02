@@ -9,15 +9,17 @@ RELAY_SERVER="mys:~/termux-inbox"
 rsync --remove-source-files --ignore-missing-args \
     "$RELAY_SERVER/*" \
     "$LOCAL_DIR_SAVE/"
+
 # decrypt
-gpg -q --decrypt-files $LOCAL_DIR_SAVE/*.gpg
+gpg -q --decrypt-files $LOCAL_DIR_SAVE/*.gpg \
+    && rm $LOCAL_DIR_SAVE/*.gpg
+
 # untar, if have any
+shopt -s nullglob
 (cd $LOCAL_DIR_SAVE && \
-    for file in *.tar; do
+    for file in ./*.tar; do
+        echo a
         tar -xvf "$file" --one-top-level;
-    done)
-
-
-rm $LOCAL_DIR_SAVE/*.gpg $LOCAL_DIR_SAVE/*.tar
+    done && rm -f ./*.tar)
 
 ls -1 $LOCAL_DIR_SAVE
