@@ -22,11 +22,14 @@ crypt_into() {
     src="$1"
     new="$2"
     if [ -d "$src" ]; then
-        gpgtar --encrypt -o "$new" --recipient $GPG_ID \
+        crypted="$TMPDIR/$new.tar.gpg"
+        gpgtar --encrypt -o "$crypted" --recipient $GPG_ID \
             -C "$(dirname "$src")" "$(basename "$src")"
     else
-        gpg --encrypt -o "$new" --recipient $GPG_ID "$src"
+        crypted="$TMPDIR/$new.gpg"
+        gpg --encrypt -o "$crypted" --recipient $GPG_ID "$src"
     fi
+    echo "$crypted"
 }
 
 # crypt, send and move to folder "sent" (just in case)
@@ -38,9 +41,8 @@ crypt_and_send() {
     fi
 
     timed_name="$(append_time "$(basename "$src")")"
-    crypted="$TMPDIR/$timed_name.gpg"
 
-    crypt_into "$src" "$crypted"
+    crypted=$(crypt_into "$src" "$timed_name")
 
     scp "$crypted" "$SYNC_DEST" \
         || (echo >> "$INBOX_MD" && echo "can't send" && exit 1)
