@@ -1,4 +1,6 @@
 # on testing
-from_relay/
-sent/
-phone_inbox.md
+/from_relay/
+/sent/
+/phone_inbox.md
+
+test_env/
