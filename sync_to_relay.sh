@@ -7,7 +7,7 @@ INBOX_MD="$INBOX_FOLDER/inbox.md"
 INBOX_VOICES="$INBOX_FOLDER/voices/"
 LOCAL_DIR_SENT="$INBOX_FOLDER/sent"
 
-SYNC_DEST="mys:~/termux-inbox"
+RELAY_SERVER="mys:~/termux-inbox"
 GPG_ID="for-termux-inbox"
 
 append_time() {
@@ -44,7 +44,7 @@ crypt_and_send() {
 
     crypted=$(crypt_into "$src" "$timed_name")
 
-    scp "$crypted" "$SYNC_DEST" \
+    scp "$crypted" "$RELAY_SERVER" \
         || (echo >> "$INBOX_MD" && echo "can't send" && exit 1)
     rm "$crypted"
 
