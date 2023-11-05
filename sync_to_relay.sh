@@ -1,13 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-INBOX_FOLDER="${TEST_INBOX_FOLDER:-$HOME/device/txts/phone_inbox}"
+INBOX_FOLDER="$HOME/device/txts/phone_inbox"
 
 INBOX_MD="$INBOX_FOLDER/inbox.md"
 INBOX_VOICES="$INBOX_FOLDER/voices/"
 LOCAL_DIR_SENT="$INBOX_FOLDER/sent"
 
-RELAY_SERVER="${TEST_RELAY_SERVER:-mys:~/termux-inbox}"
+RELAY_SERVER="mys:~/termux-inbox"
 GPG_ID="for-termux-inbox"
 
 append_time() {

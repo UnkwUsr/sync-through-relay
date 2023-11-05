@@ -3,7 +3,7 @@ set -euo pipefail
 
 # TODO: absolute path
 LOCAL_DIR_SAVE="./from_relay"
-RELAY_SERVER="${TEST_RELAY_SERVER:-mys:~/termux-inbox}"
+RELAY_SERVER="mys:~/termux-inbox"
 
 # --mkpath 
 rsync --remove-source-files --ignore-missing-args \
