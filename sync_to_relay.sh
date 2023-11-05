@@ -44,7 +44,7 @@ crypt_and_send() {
 
     crypted=$(crypt_into "$src" "$timed_name")
 
-    scp "$crypted" "$RELAY_SERVER" \
+    scp "$crypted" "$RELAY_SERVER/" \
         || (echo >> "$INBOX_MD" && echo "can't send" && exit 1)
     rm "$crypted"
 
