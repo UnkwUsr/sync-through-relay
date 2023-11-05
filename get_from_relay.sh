@@ -21,5 +21,3 @@ shopt -s nullglob
         echo a
         tar -xvf "$file" --one-top-level;
     done && rm -f ./*.tar)
-
-ls -1 $LOCAL_DIR_SAVE
